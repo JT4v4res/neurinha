@@ -1,9 +1,6 @@
 import logging
 import logging.handlers
 import os
-from handlers.commands.start import start
-from handlers.commands.elegant_message import save_elegant_message
-from handlers.messages.echo import echo
 from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
@@ -13,9 +10,11 @@ from telegram.ext import (
 from settings import (
     LOGS_DIR,
     LOGS_FILENAME,
+    HANDLERS_DIR,
     TOKEN
 )
 from utils.custom_formatter import CustomFormatter
+from utils.load_handlers import recursive_handler_loader
 
 
 try:
@@ -46,15 +45,23 @@ logging.basicConfig(
 if __name__ == "__main__":
     application = ApplicationBuilder().token(TOKEN).build()
 
-    start_handler = CommandHandler("start", start)
+    found_handlers = recursive_handler_loader(HANDLERS_DIR)
 
-    elegant_message_handler = CommandHandler(
-        "elegant_message", save_elegant_message)
+    for handler in found_handlers:
+        if handler.get('handler_type', '').lower() == 'commands':
+            application.add_handler(CommandHandler(
+                handler.get('name', ''),
+                handler.get('func_inst', None)
+            ))
+            continue
 
-    echo_handler = MessageHandler(filters.TEXT & (~filters.COMMAND), echo)
-
-    application.add_handler(start_handler)
-    application.add_handler(echo_handler)
-    application.add_handler(elegant_message_handler)
+        elif handler.get('handler_type', '').lower() == 'messages':
+            application.add_handler(
+                MessageHandler(
+                    filters.TEXT & (~filters.COMMAND),
+                    handler.get('func_inst', None)
+                )
+            )
+            continue
 
     application.run_polling()

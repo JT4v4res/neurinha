@@ -19,7 +19,7 @@ MODEL_TEMPERATURE = os.getenv("MODEL_TEMPERATURE")
 LOGS_DIR = os.getenv("LOGS_DIR")
 LOGS_FILENAME = os.getenv("LOGS_FILENAME")
 HISTORY_TABLE_NAME = os.getenv("HISTORY_TABLE_NAME")
-
+HANDLERS_DIR = "handlers/"
 
 MODEL = OllamaLLM(
     model=MODEL_NAME,
