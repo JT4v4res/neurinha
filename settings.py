@@ -7,6 +7,7 @@ from langchain_ollama.llms import OllamaLLM
 load_dotenv()
 
 
+# ENVIRONMENT LOADING
 TOKEN = os.getenv("TOKEN")
 PG_DATABASE = os.getenv("PG_DATABASE")
 PG_USER = os.getenv("PG_USER")
@@ -21,11 +22,11 @@ LOGS_FILENAME = os.getenv("LOGS_FILENAME")
 HISTORY_TABLE_NAME = os.getenv("HISTORY_TABLE_NAME")
 HANDLERS_DIR = "handlers/"
 
-MODEL = OllamaLLM(
-    model=MODEL_NAME,
-    host=MODEL_HOSTNAME,
-    temperature=MODEL_TEMPERATURE
-)
+# TODO: Create a new way to load the LLM System template by using either
+# a .txt file containg the prompt or a XML Prompt file.
+
+# LLM SETUP
+MODEL = OllamaLLM(model=MODEL_NAME, host=MODEL_HOSTNAME, temperature=MODEL_TEMPERATURE)
 
 HUMAN_TEMPLATE = f"{{question}}"
 
@@ -54,3 +55,7 @@ PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
 )
 
 CHAIN = PROMPT_TEMPLATE | MODEL
+
+# NETWORK SETUP
+SERVER_HOST = os.getenv("SERVER_HOST")
+SERVER_PORT = os.getenv("SERVER_PORT")
